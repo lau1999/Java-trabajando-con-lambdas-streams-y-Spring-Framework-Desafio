@@ -3,3 +3,5 @@
 -> Aplica buenas prácticas de desarrollo con funciones lambda
 -> Manipula el flujo de datos con Streams
 -> Implementa estadísticas personalizadas
+
+-> Apis publicas https://publicapis.dev/
