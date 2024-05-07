@@ -13,44 +13,55 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class Principal {
-    //Constante
+
+    // Constante
     private static final String URL_BASE = "https://gutendex.com/books/" ;
 
-    //instancia
+    // Instancias de servicios
     private ConsumoAPI consumoAPI = new ConsumoAPI();
     private ConvierteDatos conversor = new ConvierteDatos();
-
     private Scanner teclado = new Scanner(System.in);
 
+    // Colores ANSI
     public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
 
 
-    //Metodo
+
+
+    // Método principal para mostrar el menú y realizar las operaciones
     public void muestraElMenu(){
+
+        // Consumir y mostrar JSON
+        System.out.println(ANSI_RED + "*******************************************************************" + ANSI_RESET);
+        System.out.println(ANSI_PURPLE + " Consumiendo JSON " + ANSI_RESET);
         var json = consumoAPI.obtenerDatos(URL_BASE);
-        //Prueba si Realmente consume el Json
+        System.out.println(ANSI_GREEN + "JSON obtenido: " + json + ANSI_RESET);
 
-        System.out.println(json);
-
+        // Convertir y mostrar datos
+        System.out.println(ANSI_PURPLE + "Convirtiendo JSON..." + ANSI_RESET);
         var datos = conversor.obtenerDatos(json, Datos.class);
-        System.out.println(datos);
+        System.out.println(ANSI_GREEN + "Datos obtenidos: " + datos + ANSI_RESET);
 
-        // Top 10 libros más descargados
-        System.out.println("************************************");
-        System.out.println(" Top 10 libros más descargados");
+
+        // Mostrar top 10 libros más descargados
+        System.out.println(ANSI_RED + "*******************************************************************" + ANSI_RESET);
+        System.out.println(ANSI_PURPLE + " Top 10 libros más descargados " + ANSI_RESET);
         AtomicInteger contador = new AtomicInteger(1);
         datos.resultados().stream()
                 .sorted(Comparator.comparing(DatosLibros::numeroDeDescargas).reversed())
                 .limit(10)
                 .map(l-> l.titulo().toUpperCase())
-                .forEach(libro -> System.out.println(contador.getAndIncrement() + ".- " + libro));
-                //.forEach(System.out::println);
+                .forEach(libro -> System.out.println(ANSI_GREEN + contador.getAndIncrement() + ".- " + libro + ANSI_RESET ));
 
 
-        // Buscando libros por nombre
-        System.out.println("************************************");
-        System.out.println("Ingrese el nombre del libro que desea buscar");
+
+        // Buscar libros por nombre
+        System.out.println(ANSI_RED + "*******************************************************************" + ANSI_RESET);
+        System.out.println(ANSI_PURPLE + "Ingrese el nombre del libro que desea buscar" + ANSI_RESET);
         var tituloLibro = teclado.nextLine();
         json = consumoAPI.obtenerDatos(URL_BASE+"?search=" + tituloLibro.replace(" ","+"));
         var datosBusqueda = conversor.obtenerDatos(json, Datos.class);
@@ -58,21 +69,23 @@ public class Principal {
                 .filter(l-> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
                 .findFirst();
         if (librosBuscando.isPresent()){
-            System.out.println("El libro fue encontrado");
+            System.out.println(ANSI_GREEN + "El libro fue encontrado" + ANSI_RESET);
             System.out.println(librosBuscando.get());
         }else {
-            System.out.println("Libro no encontrado");
+            System.out.println(ANSI_GREEN + "Libro no encontrado" + ANSI_RESET);
         }
 
-        //Generando estadísticas
-        System.out.println("************************************");
+        // Generar y mostrar estadísticas
+        System.out.println(ANSI_RED + "*******************************************************************" + ANSI_RESET);
         DoubleSummaryStatistics est = datos.resultados().stream()
                 .filter(d->d.numeroDeDescargas() >0)
                 .collect(Collectors.summarizingDouble(DatosLibros::numeroDeDescargas));
-        System.out.println("Cantidad Maxima de Descargas: "+ est.getMax());
-        System.out.println("Cantidad Media de Descargas: " + est.getAverage());
-        System.out.println("Cantidad Minima de Decargas: "+ est.getMin());
-        System.out.println("Cantidad de Registros Evaluados para Calcular las Estadisticas: "+est.getCount());
+        System.out.println(ANSI_GREEN + "Cantidad Maxima de Descargas: "+ est.getMax() + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "Cantidad Media de Descargas: " + est.getAverage() + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "Cantidad Minima de Decargas: "+ est.getMin() + ANSI_RESET);
+        System.out.println(ANSI_YELLOW  + "Cantidad de Registros Evaluados para Calcular las Estadisticas: "+est.getCount()+ ANSI_RESET);
+
+        System.out.println(ANSI_RED + "*******************************************************************" + ANSI_RESET);
 
 
     }

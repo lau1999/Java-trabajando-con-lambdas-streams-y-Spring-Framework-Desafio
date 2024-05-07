@@ -5,9 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
 
+// Inicia
+
+// Indica que esta clase representa los datos obtenidos de la API
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Datos(
-       //aqui empieza
 
         @JsonAlias( "results" ) List< DatosLibros > resultados
 ) {
